@@ -1,113 +1,149 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { DropdownMenu, DropdownMenuLabel, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup } from '@/components/ui/dropdown-menu'
+import { Textarea } from '@/components/ui/textarea'
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import constructPrompt from '@/utils/constructPrompt'
+import initializeModel from '@/utils/intializeModel'
+import { Check, ChevronDown, Clipboard, Cpu, Loader2, RotateCcw, Twitter } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+
+const Home = () => {
+
+  const [style, setStyle] = useState("Casual");
+  const [action, setAction] = useState("Generate");
+  const [userTweet, setUserTweet] = useState("")
+  const [model, setModel] = useState(null);
+  const [generatedTweet, setgeneratedTweet] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(generatedTweet);
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 1000);
+  };
+
+  const generateTweet = async () => {
+    setLoading(true)
+    const prompt = constructPrompt(userTweet, action, style)
+
+    // @ts-ignore
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    setgeneratedTweet(text)
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    setModel(initializeModel())
+  }, [])
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <TooltipProvider>
+      <main>
+        <div className='flex from-[#74ebd5] to-[#ACB6E5] bg-gradient-to-r'>
+          <h1 className='my-3 text-white text-2xl mx-8'>Tweets-book.</h1>
         </div>
-      </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+        <section>
+          <div className='flex justify-center mt-20'>
+            <p className='text-center mx-2 text-xl'>
+              Get AI-generated and AI-enhanced tweets for free!🥳
+              <br />
+              <span className='text-neutral-400 text-sm'>Tweets-book uses Google's Gemini API to generate its responses</span>
+            </p>
+          </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+          <div className="flex flex-col px-4 mt-12 mb-4">
+            {/* USER INPUT */}
+            <section>
+              <Textarea placeholder='What&apos;s your tweet about?' onChange={e => setUserTweet(e.target.value)} />
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+              <div className='my-4'>
+                <span className='text-neutral-400 text-sm mb-2'>Select Parameters:</span>
+                <br />
+                <div className='flex mt-2 w-fit'>
+                  <div className='mx-1 w-1/3'>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant='outline'>{style} <ChevronDown className='ml-4' /></Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel>Tweet Style</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup value={style} onValueChange={setStyle}>
+                          <DropdownMenuRadioItem value='Professional'>Professional</DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value='Casual'>Casual</DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value='Funny'>Funny</DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value='Informative'>Informative</DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value='Story'>Story</DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  <div className='mx-1 w-1/3'>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant='outline'>{action} <ChevronDown className='ml-4' /></Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel>Action</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup value={action} onValueChange={setAction}>
+                          <DropdownMenuRadioItem value='Enhance'>Enhance</DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value='Generate'>Generate</DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  <Button className='mx-1 w-1/3' onClick={generateTweet} disabled={loading}>
+                    {!loading ? <>Get Tweet <Cpu className="mx-2" /></> : <Loader2 className='animate-spin duration-300 mx-2' />}
+                  </Button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+        {/* GENERATED TWEET */}
+        <section className='px-4 mb-10'>
+          <Card>
+            <CardHeader>
+              <Twitter className='mx-2' size={24} />
+            </CardHeader>
+            <div className='px-4 pb-5'>
+              {generatedTweet}
+            </div>
+            <CardFooter>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger>
+                  <Button onClick={handleCopy} className='mx-2' variant='ghost'>{!copied ? <Clipboard size={18} /> : <Check size={18} />}</Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Copy</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger>
+                  <Button disabled={loading} className='mx-2' variant='ghost'><RotateCcw size={18} /></Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Regenerate</p>
+                </TooltipContent>
+              </Tooltip>
+            </CardFooter>
+          </Card>
+        </section>
+      </main>
+    </TooltipProvider>
+  )
 }
+
+export default Home
