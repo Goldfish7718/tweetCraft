@@ -58,7 +58,7 @@ const Home = () => {
           <p className='text-center mx-2 text-xl'>
             Get AI-generated and AI-enhanced tweets for free!🥳
             <br />
-            <span className='text-neutral-400 text-sm'>TweetCraft uses Google's Gemini API to generate its responses</span>
+            <span className='text-neutral-400 text-sm'>TweetCraft uses Google&apos;s Gemini API to generate its responses</span>
           </p>
         </div>
 
