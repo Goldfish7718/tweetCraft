@@ -1,13 +1,15 @@
 "use client"
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { Card, CardFooter, CardHeader } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuLabel, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup } from '@/components/ui/dropdown-menu'
+import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import constructPrompt from '@/utils/constructPrompt'
 import initializeModel from '@/utils/intializeModel'
 import { Check, ChevronDown, Clipboard, Cpu, Loader2, RotateCcw, Twitter } from 'lucide-react'
+import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
 const Home = () => {
@@ -49,14 +51,14 @@ const Home = () => {
     <TooltipProvider>
       <main>
         <div className='flex from-[#74ebd5] to-[#ACB6E5] bg-gradient-to-r justify-center md:justify-start'>
-          <h1 className='my-3 text-white text-2xl mx-8'>Tweets-book.</h1>
+          <h1 className='my-3 text-white text-2xl mx-8'>TweetCraft.</h1>
         </div>
 
         <div className='flex justify-center mt-20'>
           <p className='text-center mx-2 text-xl'>
             Get AI-generated and AI-enhanced tweets for free!🥳
             <br />
-            <span className='text-neutral-400 text-sm'>Tweets-book uses Google's Gemini API to generate its responses</span>
+            <span className='text-neutral-400 text-sm'>TweetCraft uses Google's Gemini API to generate its responses</span>
           </p>
         </div>
 
@@ -112,14 +114,15 @@ const Home = () => {
 
           {/* GENERATED TWEET */}
           {generatedTweet &&
-              <Card className='mx-3 md:w-1/2 md:mb-10'>
+              <Card className='mx-3 md:w-1/2 flex flex-col'>
                 <CardHeader>
                   <Twitter className='mx-2' size={24} />
                 </CardHeader>
-                <div className='px-4 pb-5'>
+                <div className='px-4 pb-5 flex-grow'>
                   {generatedTweet}
                 </div>
-                <CardFooter>
+                <Separator />
+                <CardFooter className='p-3'>
                   <Tooltip delayDuration={0}>
                     <TooltipTrigger>
                       <Button onClick={handleCopy} className='mx-2' variant='ghost'>{!copied ? <Clipboard size={18} /> : <Check size={18} />}</Button>
@@ -139,10 +142,22 @@ const Home = () => {
                 </CardFooter>
               </Card>
           }
+          {!generatedTweet &&
+            <div className='outline rounded-md justify-center items-center outline-1 outline-neutral-200 w-1/2 mx-3 hidden md:flex'>
+              <p>Your tweet will appear here</p>
+            </div>
+          }
         </section>
 
         <footer className='bg-neutral-100 justify-center mt-4'>
-          <p className='text-sm text-neutral-700 text-center py-5'>Tweets-book may not produce the desired response always, in such cases, try to regenerate response with different prompts.</p>
+          <div className='py-5'>
+            <p className='text-sm text-neutral-700 text-center mx-2'>
+              TweetCraft may not produce the desired response always, in such cases, try to regenerate response with different prompts.
+              <br />
+            </p>
+            {/* <span className='text-sm text-neutral-500 text-center mt-2'>Made with &lt;3 by <Link href="https://bento.me/tejasnanoti" className='hover:underline'>Tejas</Link></span> */}
+            <p className='text-sm text-neutral-500 text-center'>Made with &lt;3 by <Link href="https://bento.me/tejasnanoti" className='hover:underline'>Tejas</Link></p>
+          </div>
         </footer>
       </main>
     </TooltipProvider>
