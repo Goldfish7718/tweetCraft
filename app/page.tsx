@@ -43,13 +43,28 @@ const Home = () => {
     setLoading(false)
   }
 
+  const handleTweetIntent = async () => {
+    let hashtags = generatedTweet.match(/#[\w]+/g) || [];
+    
+    // Remove hashtags from the tweet
+    let tweetWithoutHashtags = generatedTweet.replace(/#[\w]+/g, '').trim();
+    hashtags = hashtags.map(tag => tag.substring(1));
+    // return {
+    //     tweetWithoutHashtags: tweetWithoutHashtags,
+    //     hashtags: hashtags
+    // };
+
+    console.log(hashtags)
+    window.open(`https://twitter.com/intent/tweet?text=${tweetWithoutHashtags}&hashtags=${hashtags.map((hashtag, index) => (index !== hashtags.length - 1 ? `${hashtag}%2C%20` : hashtag))}`, '_blank')
+  }
+
   useEffect(() => {
     setModel(initializeModel())
   }, [])
 
   return (
     <TooltipProvider>
-      <main>
+      <main className='h-auto'>
         <div className='flex from-[#74ebd5] to-[#ACB6E5] bg-gradient-to-r justify-center md:justify-start'>
           <h1 className='my-3 text-white text-2xl mx-8'>TweetCraft.</h1>
         </div>
@@ -58,12 +73,14 @@ const Home = () => {
           <p className='text-center mx-2 text-xl'>
             Get AI-generated and AI-enhanced tweets for free!🥳
             <br />
-            <span className='text-neutral-400 text-sm'>TweetCraft uses Google&apos;s Gemini API to generate its responses</span>
+            {/* <div className='mt-6 md:mt-0'> */}
+              <span className='text-neutral-400 text-sm'>TweetCraft uses Google&apos;s Gemini API to generate its responses</span>
+            {/* </div> */}
           </p>
         </div>
 
         {/* flex flex-col md:flex-row px-4 mt-12 mb-4 w-full */}
-        <section className='flex w-full md:flex-row flex-col mt-10'>
+        <section className='flex w-full md:flex-row flex-col mt-10 flex-grow'>
           {/* USER INPUT */}
           <div className='mx-3 md:w-1/2'>
             <Textarea placeholder='What&apos;s your tweet about?' onChange={e => setUserTweet(e.target.value)} rows={10} />
@@ -139,6 +156,14 @@ const Home = () => {
                       <p>Regenerate</p>
                     </TooltipContent>
                   </Tooltip>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger>
+                      <Button disabled={loading} onClick={handleTweetIntent} className='mx-2' variant='ghost'><Twitter size={18} /></Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Tweet</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </CardFooter>
               </Card>
           }
@@ -149,13 +174,13 @@ const Home = () => {
           }
         </section>
 
-        <footer className='bg-neutral-100 justify-center mt-4'>
-          <div className='py-5'>
-            <p className='text-sm text-neutral-700 text-center mx-2'>
+        
+
+        <footer className='justify-center mt-8'>
+          <div className='py-3 flex flex-col justify-center'>
+            <p className='text-sm text-neutral-500 text-center mx-2'>
               TweetCraft may not produce the desired response always, in such cases, try to regenerate response with different prompts.
-              <br />
             </p>
-            {/* <span className='text-sm text-neutral-500 text-center mt-2'>Made with &lt;3 by <Link href="https://bento.me/tejasnanoti" className='hover:underline'>Tejas</Link></span> */}
             <p className='text-sm text-neutral-500 text-center'>Made with &lt;3 by <Link href="https://bento.me/tejasnanoti" className='hover:underline'>Tejas</Link></p>
           </div>
         </footer>
@@ -164,4 +189,5 @@ const Home = () => {
   )
 }
 
+// https://twitter.com/intent/tweet?text=crazy%20shit%20%23gotsuspended
 export default Home
