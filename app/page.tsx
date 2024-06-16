@@ -44,19 +44,22 @@ const Home = () => {
   }
 
   const handleTweetIntent = async () => {
-    let hashtags = generatedTweet.match(/#[\w]+/g) || [];
+    let hashtags: string[] = generatedTweet.match(/#[\w]+/g) || [];
     
     // Remove hashtags from the tweet
     let tweetWithoutHashtags = generatedTweet.replace(/#[\w]+/g, '').trim();
+    
+    // Remove the '#' symbol from each hashtag
     hashtags = hashtags.map(tag => tag.substring(1));
-    // return {
-    //     tweetWithoutHashtags: tweetWithoutHashtags,
-    //     hashtags: hashtags
-    // };
 
-    console.log(hashtags)
-    window.open(`https://twitter.com/intent/tweet?text=${tweetWithoutHashtags}&hashtags=${hashtags.map((hashtag, index) => (index !== hashtags.length - 1 ? `${hashtag}%2C%20` : hashtag))}`, '_blank')
-  }
+    console.log(hashtags);
+
+    // Join hashtags with commas for the URL
+    const formattedHashtags = hashtags.join(',');
+
+    // Open the Twitter intent URL
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetWithoutHashtags)}&hashtags=${encodeURIComponent(formattedHashtags)}`, '_blank');
+}
 
   useEffect(() => {
     setModel(initializeModel())
